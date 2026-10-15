@@ -1,8 +1,30 @@
-# replyloop
+<img src="assets/banner1.svg" alt="sobhan" width="100%">
 
-Your private Instagram helper. It answers comments on your posts and reels, sends DMs (optionally only to followers,
-with an "I'm following ✅" button), and shows everything in an inbox. It handles several Instagram accounts,
-has a light and a dark theme, and installs on Android and iPhone like a normal app.
+<div align="center">
+
+# 💬 ReplyLoop
+
+### Answers Instagram comments, sends DMs, and keeps everything in one inbox
+
+![Status](https://img.shields.io/badge/status-in%20development-orange?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Starlette](https://img.shields.io/badge/Starlette-1.0-009688?style=for-the-badge)
+![Instagram](https://img.shields.io/badge/Instagram%20API-E4405F?style=for-the-badge&logo=instagram&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)
+![Claude](https://img.shields.io/badge/Claude%20AI-D97757?style=for-the-badge&logo=anthropic&logoColor=white)
+
+**🇮🇷 فارسی (RTL) · 🇬🇧 English · ☀️ Light · 🌙 Dark · 📱 Installable app**
+
+</div>
+
+---
+
+## 💡 Why I built this
+
+When a post asks people to comment a keyword ("لینک لطفا") to get a link, someone has to answer every one of those comments and send every DM by hand. Miss a few and those people are gone.
+
+So I built my own private helper. It **answers comments on posts and reels**, **sends the DM** (optionally only to followers, with an "I'm following ✅" button), and shows every step in an **inbox**. It handles several Instagram accounts and installs on Android and iPhone like a normal app. 📲
 
 ```
 someone comments on a post
@@ -14,12 +36,79 @@ someone comments on a post
 
 ---
 
-## Step 1 · Try it on your computer (10 minutes)
+## ✨ Features
+
+### 🤖 Automations
+- 📝 **Per post** automations, ordered with arrows (the first match wins), plus automations for **every post**
+- 🔤 Keywords in **Persian, English or Turkish**, separated by a comma (the Persian comma ، works too); ي/ی and ك/ک count as the same letter
+- 💌 **Public reply and/or DM**, with a **followers-only** mode: a DM with a button, then the details once they follow
+- 🧠 Optional **AI reply** when no keyword matches
+- 🧪 New accounts start in **Test mode**: the bot decides and logs everything but sends nothing, until you **Go live**
+
+### 📥 Inbox
+- 🗂️ Every comment and what happened, step by step
+- 🔍 Filters for *Waiting*, *DM sent*, *Errors*…
+- 🎮 **Simulate comment** and simulate a button tap, to test without Instagram
+
+### 📊 Insights (7 or 30 days, per account)
+- 👀 **Account:** views, reach, interactions, accounts engaged, link taps, net follows, a followers chart, reach per day and audience (countries, cities, age, gender; Instagram needs 100+ followers for audience and follows data)
+- 🎬 **Posts & Reels:** your latest 25 ranked by views, reach, engagement, saves or shares, plus Reels watch time
+- ⏳ **Stories:** Instagram deletes story stats after 24 hours, so the app saves them every hour while a story is live. History starts the day you connect, and stories with under 5 viewers have no stats.
+- 📈 **Bot impact:** comments answered, DMs delivered, and how many people followed because of the follow button, per automation
+- 🕒 Numbers are organic only and can be up to 48 hours behind. Instagram data is cached (account 1h, posts 3h, audience 24h); use *Refresh from Instagram* for the latest. The follower chart fills in day by day from a daily snapshot.
+
+### 🌐 Language
+- 🇮🇷 Opens in **Persian** (right-to-left) by default, with everyday wording ("پست‌ها و ریلزها", "دایرکت", "فالوورها"), **English digits** and **Shamsi dates**
+- 🇬🇧 Switch to English on the sign-in page or in **Settings → Appearance → Language** (saved per phone or browser)
+- ✏️ The ready-made follower DM texts start in Persian; change them in Settings or per automation
+- 📄 The privacy page stays in English because Meta's reviewers read it
+
+---
+
+## 🔒 Security
+
+- 🚪 **Only people you add can sign in.** There's no sign-up, and Google sign-in only works for emails on your list.
+- 👥 **Roles** (*Settings → People with access*):
+  - 👑 **Owner** (you, `ADMIN_EMAIL`): everything, including connecting or removing Instagram accounts, switching test/live and managing people
+  - ✏️ **Editor:** automations, settings, inbox, insights, simulating comments
+  - 👁️ **View only:** can look at everything, can't change anything
+- 🔐 **Two-step login** (*Settings → Two-step login*): after the password (or Google), a 6-digit code from an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…). Turning it on signs out your other devices. You get 10 one-time **backup codes**: save them.
+  - Someone you added lost their phone? *People with access →* the key icon resets their two-step login.
+  - **You** lost your phone and your backup codes? On Render, add `RESET_2FA_EMAIL` = your email, let it redeploy, sign in with your password, then **delete `RESET_2FA_EMAIL`** and turn two-step login on again.
+- 📱 **Signed-in devices** (*Settings*): see every phone and browser signed in to your login, and sign any of them out.
+- 🧂 Passwords are hashed with scrypt. Sessions are HttpOnly cookies. 5 wrong passwords or codes lock that email/IP for 15 minutes.
+- 🗝️ Instagram tokens and two-step secrets are encrypted with `SECRET_KEY`. **Never change `SECRET_KEY`**, or you'll need to reconnect accounts and set up two-step login again.
+- ✅ Webhooks are only accepted when signed by Meta with your `APP_SECRET`.
+- 🙈 Never share `.env`, your Supabase URL or tokens. Change the starting password in *Settings → Your password*.
+
+---
+
+## 🗂️ Structure
+
+| File | What it does |
+|---|---|
+| `app.py` | Web server: pages, login, API, webhook |
+| `bot.py` | Decides replies, runs the follower-button flow, refreshes tokens, backup checker |
+| `store.py` · `db.py` | Database (SQLite on your computer, Supabase Postgres online) |
+| `google_auth.py` | Sign in with Google (only for emails that already have access) |
+| `twofa.py` · `qr.py` | Two-step login codes, backup codes, and the setup QR code |
+| `security.py` | Password hashing, sessions, login rate limit, token encryption |
+| `instagram.py` | Instagram API calls |
+| `rules.py` · `ai.py` | Keyword matching (Turkish/Persian-aware) and the AI fallback |
+| `insights.py` | Insights: Instagram stats with caching, hourly story saving, bot impact, demo data |
+| `i18n.py` · `static/i18n.js` | Persian wording for server messages and app screens (edit to change any word) |
+| `static/` | The app you see: `index.html`, `app.js`, `app.css`, icons, `sw.js` + `manifest.webmanifest` (installable app) |
+| `render.yaml` | One-click Render setup |
+
+---
+
+## 🚀 Getting started
+
+### 1️⃣ Try it on your computer (10 minutes)
 
 You need Python 3.11+.
 
 ```bash
-cd replyloop
 python -m venv .venv
 # Windows: .venv\Scripts\activate     Mac/Linux: source .venv/bin/activate
 pip install -r requirements.txt
@@ -36,186 +125,90 @@ Start it:
 uvicorn app:app --reload
 ```
 
-Open **http://localhost:8000**, sign in, tap **Try a demo account**, open the pistachio reel and type
-`لینک لطفا` in **Try a comment** → **Simulate comment**. You'll land in the inbox, where you can simulate
-the person tapping the button as a follower or not.
+Open **http://localhost:8000**, sign in, tap **Try a demo account**, open the pistachio reel and type `لینک لطفا` in **Try a comment** → **Simulate comment**. You'll land in the inbox, where you can simulate the person tapping the button as a follower or not.
 
-> On your computer the data is saved in `replyloop.db`. You can't install it on your phone from here
-> (phones only install apps from `https://` addresses), which is what Step 2 is for.
+> 💡 On your computer the data is saved in `replyloop.db`. Phones only install apps from `https://` addresses, which is what step 2 is for.
 
----
+### 2️⃣ Put it online for free (about 30 minutes, once)
 
-## Step 2 · Put it online for free (about 30 minutes, once)
+You'll use three free services: **GitHub** (stores the code), **Supabase** (the database) and **Render** (runs the app).
 
-You'll use three free services: **GitHub** (stores the code), **Supabase** (the database), **Render** (runs the app).
+**🐙 GitHub**
+1. Create a **private** repository and push this project to it. `.env` and `replyloop.db` are ignored on purpose, so your passwords never end up on GitHub.
 
-### 2a · GitHub
-1. Create a free account at github.com → **New repository** → name it `replyloop` → **Private** → Create.
-2. Upload the project: either drag the files in on the website (**uploading an existing file**), or:
-   ```bash
-   git init && git add . && git commit -m "replyloop"
-   git branch -M main
-   git remote add origin https://github.com/<you>/replyloop.git
-   git push -u origin main
-   ```
-   `.env` and `replyloop.db` are ignored on purpose, so your passwords never end up on GitHub.
-
-### 2b · Supabase (database)
-1. supabase.com → sign up → **New project**. Pick a region close to you (e.g. *Frankfurt*).
-   Set a **database password** and save it somewhere.
-2. When it's ready: top bar **Connect** → **Session pooler** → copy the URI. It looks like
-   `postgresql://postgres.abcd:[YOUR-PASSWORD]@aws-0-eu-central-1.pooler.supabase.com:5432/postgres`.
-   Replace `[YOUR-PASSWORD]` with your database password. This is your `DATABASE_URL`.
-   (Use the *Session pooler*, not *Direct connection*: Render can't reach the direct one.)
+**🗄️ Supabase (database)**
+1. supabase.com → **New project**. Pick a region close to you (e.g. *Frankfurt*). Set a **database password** and save it.
+2. Top bar **Connect** → **Session pooler** → copy the URI. It looks like `postgresql://postgres.abcd:[YOUR-PASSWORD]@aws-0-eu-central-1.pooler.supabase.com:5432/postgres`. Replace `[YOUR-PASSWORD]` with your database password. This is your `DATABASE_URL`. (Use the *Session pooler*, not *Direct connection*: Render can't reach the direct one.)
 
 The app creates its tables by itself on first start.
 
-### 2c · Render (runs the app)
-1. render.com → sign up with GitHub → **New** → **Blueprint** → choose your `replyloop` repo.
-2. Render reads `render.yaml` and asks for these values:
-   - `DATABASE_URL`: from 2b
+**☁️ Render (runs the app)**
+1. render.com → sign up with GitHub → **New** → **Blueprint** → choose your repo.
+2. Render reads `render.yaml` and asks for:
+   - `DATABASE_URL`: from Supabase
    - `ADMIN_EMAIL` / `ADMIN_PASSWORD`: your login
-   - `APP_SECRET`, `ANTHROPIC_API_KEY`, `PRIVACY_CONTACT`: leave empty for now (Step 4)
+   - `APP_SECRET`, `ANTHROPIC_API_KEY`, `PRIVACY_CONTACT`: leave empty for now (step 4)
+
    `SECRET_KEY` and `VERIFY_TOKEN` are generated for you.
-3. **Apply**. The first deploy takes a few minutes. Your app gets an address like
-   `https://replyloop-xxxx.onrender.com`.
+3. **Apply**. The first deploy takes a few minutes. Your app gets an address like `https://replyloop-xxxx.onrender.com`.
 
-### 2d · Keep it awake
-Render's free plan puts the app to sleep after 15 minutes without visitors, and waking up takes about a minute.
-That's too slow for a bot, so ping it:
-1. cron-job.org → free account → **Create cronjob**
-2. URL: `https://replyloop-xxxx.onrender.com/health` · every **10 minutes** → Save.
+**⏰ Keep it awake**
 
-(750 free hours a month on Render covers running all month.)
+Render's free plan puts the app to sleep after 15 minutes without visitors, and waking up takes about a minute. That's too slow for a bot, so ping it: at cron-job.org create a cronjob for `https://replyloop-xxxx.onrender.com/health` every **10 minutes**. (750 free hours a month on Render covers running all month.)
 
-### 2e · Sign in with Google (optional, ~10 minutes)
-Lets you (and people you add) sign in with a Google account instead of typing a password.
-Only Gmail addresses that already have access work, so it's still private.
-1. Go to **console.cloud.google.com** → create a project (any name, e.g. *replyloop*).
-2. **APIs & Services → OAuth consent screen** (also called *Google Auth Platform → Branding*): app name *replyloop*,
-   your email as support and developer contact. Audience: **External**. Add the scopes **openid** and **email** only.
-   You can leave it in **Testing** mode: then add every Gmail that will sign in under **Test users**
-   (you + the people you add). Or press **Publish app**; with only these basic scopes no Google review is needed.
-3. **Credentials → Create credentials → OAuth client ID** → type **Web application**.
-   Under **Authorized redirect URIs** add exactly: `https://replyloop-xxxx.onrender.com/auth/google/callback`
-   (your Render address). For testing on your computer, also add `http://localhost:8000/auth/google/callback`.
-4. Copy the **Client ID** and **Client secret** into Render → your service → **Environment**:
-   `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` → Save (Render redeploys). Never paste them into chat or GitHub.
-5. Open the app: a **Continue with Google** button appears on the sign-in page. Your Google email must be the same as
-   `ADMIN_EMAIL` (or a person you added in Settings).
+**🔑 Sign in with Google (optional, ~10 minutes)**
+1. **console.cloud.google.com** → create a project (e.g. *replyloop*).
+2. **APIs & Services → OAuth consent screen**: app name *replyloop*, your email as support and developer contact, audience **External**, scopes **openid** and **email** only. In **Testing** mode, add every Gmail that will sign in under **Test users**, or press **Publish app** (no Google review is needed for these scopes).
+3. **Credentials → Create credentials → OAuth client ID** → **Web application**. Under **Authorized redirect URIs** add `https://replyloop-xxxx.onrender.com/auth/google/callback`, and `http://localhost:8000/auth/google/callback` for testing on your computer.
+4. Copy the **Client ID** and **Client secret** into Render → your service → **Environment** as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Never paste them into chat or GitHub.
+5. A **Continue with Google** button appears on the sign-in page. Your Google email must match `ADMIN_EMAIL` or a person you added.
 
-Notes: the button only shows when both values are set. If you use a custom domain instead of `onrender.com`,
-set `PUBLIC_URL` to it and use that address in step 3. On an iPhone home-screen app, Google opens in a small browser
-window first; if it doesn't come back into the app, sign in with your password once there. You stay signed in for 30 days.
+> 💡 The button only shows when both values are set. With a custom domain, set `PUBLIC_URL` to it and use that address in step 3. On an iPhone home-screen app, Google opens in a small browser window first; if it doesn't come back into the app, sign in with your password once there. You stay signed in for 30 days.
 
----
-
-## Step 3 · Install it on your phone, then on other phones
+### 3️⃣ Install it on your phone
 
 Open your `https://…onrender.com` address on the phone and sign in.
 
-- **Android (Chrome):** ⋮ menu → **Install app** (or **Add to Home screen**). In the app, *Settings → Install on your phone* also shows an Install button.
-- **iPhone (Safari, not Chrome):** Share button → **Add to Home Screen**.
+- 🤖 **Android (Chrome):** ⋮ menu → **Install app** (or **Add to Home screen**). *Settings → Install on your phone* also shows an Install button.
+- 🍎 **iPhone (Safari, not Chrome):** Share button → **Add to Home Screen**.
 
-It gets the replyloop icon and opens full-screen without browser bars. Updates arrive automatically: there's no store.
+It opens full-screen with the ReplyLoop icon, and updates arrive automatically. To add other phones, go to *Settings → People with access → Add person* (owner only). Give them the address, their email and a password (or leave it empty so they use **Continue with Google**). Anyone you remove is signed out everywhere.
 
-**Other phones:** in the app, *Settings → People with access → Add person* (owner only). Give them the address,
-their email and the password you set (or leave the password empty and they use **Continue with Google** with that Gmail); they sign in and install the same way. Anyone you remove is signed out everywhere.
-There's no public sign-up, so nobody else can get in.
+### 4️⃣ Connect your Instagram accounts
 
----
-
-## Step 4 · Connect your Instagram accounts
-
-Each account must be an Instagram **Professional** account (Business or Creator) and **public**
-(Meta only sends comment notifications for public accounts).
+Each account must be an Instagram **Professional** account (Business or Creator) and **public** (Meta only sends comment notifications for public accounts).
 
 1. **developers.facebook.com** → **My Apps** → **Create app** → type **Business**.
-2. In the app: **Add product → Instagram → API setup with Instagram login**.
-3. **Permissions** to request: `instagram_business_basic`, `instagram_business_manage_comments`, `instagram_business_manage_messages`,
-   and `instagram_business_manage_insights` (for the Insights tab).
-4. **Generate access tokens** → **Add account** → sign in with each of your Instagram accounts → **Generate token** → copy.
-5. In replyloop: account menu (top right) → **Connect an Instagram account** → paste the token.
-   Repeat for each account. Tokens are stored encrypted and refreshed automatically before they expire (60 days).
-6. **Webhooks** (same Instagram setup page → *Configure webhooks*):
+2. **Add product → Instagram → API setup with Instagram login**.
+3. Request `instagram_business_basic`, `instagram_business_manage_comments`, `instagram_business_manage_messages` and `instagram_business_manage_insights` (for Insights).
+4. **Generate access tokens** → **Add account** → sign in with each Instagram account → **Generate token** → copy.
+5. In ReplyLoop: account menu (top right) → **Connect an Instagram account** → paste the token. Tokens are stored encrypted and refreshed automatically before they expire (60 days).
+6. **Webhooks** (*Configure webhooks* on the same page):
    - Callback URL: `https://replyloop-xxxx.onrender.com/webhook`
-   - Verify token: the `VERIFY_TOKEN` value from Render (Render → your service → **Environment**)
-   - Subscribe to: **comments**, **messages**, **messaging_postbacks**
-7. **App secret**: Meta → **App settings → Basic → App secret** → copy into Render as `APP_SECRET`.
-   Also set `PRIVACY_CONTACT` (an email or @handle) → **Save changes** (Render redeploys).
-8. **Make the Meta app Live**: Meta asks for a *Privacy Policy URL* first. Use
-   `https://replyloop-xxxx.onrender.com/privacy` (the app serves this page). Then switch **App mode → Live**.
-9. In replyloop, test with a second Instagram account: comment on your post while the account is in **Test mode**
-   and check the inbox. When it looks right: **Go live**.
+   - Verify token: the `VERIFY_TOKEN` value from Render → **Environment**
+   - Subscribe to **comments**, **messages**, **messaging_postbacks**
+7. **App secret**: Meta → **App settings → Basic → App secret** → copy into Render as `APP_SECRET`. Also set `PRIVACY_CONTACT` (an email or @handle).
+8. **Make the Meta app Live**: use `https://replyloop-xxxx.onrender.com/privacy` as the *Privacy Policy URL*, then switch **App mode → Live**.
+9. Test with a second Instagram account while yours is in **Test mode** and check the inbox. When it looks right: **Go live**.
 
-### About Meta's access levels (read this)
-Meta's docs disagree with each other. One page says apps used only for accounts you own need just
-**Standard Access**. The webhook page says comment and message webhooks need **Advanced Access** and
-**Business Verification**. So replyloop doesn't rely on comment webhooks alone:
-
-- A **backup checker** looks for new comments on your 5 newest posts every 3 minutes (`POLL_SECONDS`, `POLL_POSTS`)
-  and answers anything the webhook missed. It works with Standard Access. Worst case, replies arrive a few minutes late.
-- The followers-only **button** still needs the messages webhook to learn about taps. If taps never reach the
-  inbox, that's the sign Meta wants Advanced Access for your app (App Review). Normal DMs and public replies keep working.
+> ⚠️ **About Meta's access levels:** Meta's docs disagree. One page says apps for accounts you own need only **Standard Access**; the webhook page says comment and message webhooks need **Advanced Access** and **Business Verification**. So a **backup checker** looks for new comments on your 5 newest posts every 3 minutes (`POLL_SECONDS`, `POLL_POSTS`) and answers anything the webhook missed. The followers-only **button** still needs the messages webhook; if taps never reach the inbox, Meta wants Advanced Access (App Review). Normal DMs and public replies keep working.
 
 ---
 
-## Language (فارسی / English)
+## 🗺️ Roadmap
 
-- The app opens in **Persian** (right-to-left) by default. Switch to English on the sign-in page or in **Settings → Appearance → Language**. The choice is saved per phone/browser.
-- Persian mode uses everyday Persian ("پست‌ها و ریلزها", "دایرکت", "فالوورها"), **English digits**, and **Shamsi dates**.
-- The ready-made follower DM texts (headline, button, "not following yet" message) start in Persian. Change them any time in Settings or per automation.
-- Keywords can be Persian, English or Turkish. Separate them with a comma — the Persian comma (،) works too. ي/ی and ك/ک are treated as the same letter.
-- The privacy page stays in English because Meta's reviewers read it.
+- [x] Roles: Owner, Editor, View only
+- [x] Two-step login with backup codes
+- [x] Signed-in devices list
 
-## Everyday use
-- **Posts**: tap a post to give it its own automations. Use the arrows to set their order (the first match wins).
-- **Automations**: rules for every post.
-- **Inbox**: every comment and what happened, step by step. Filters for *Waiting*, *DM sent*, *Errors*…
-- **Insights** (7 or 30 days, per account):
-  - *Account*: views, reach, interactions, accounts engaged, link taps, net follows, followers chart, reach per day, audience
-    (countries, cities, age, gender; Instagram needs 100+ followers for audience and follows data).
-  - *Posts & Reels*: your latest 25 ranked by views, reach, engagement, saves or shares (+ Reels watch time).
-  - *Stories*: Instagram deletes story stats after 24 hours, so the app saves them every hour while a story is live.
-    History starts the day you connect; older stories can't be recovered. Stories with under 5 viewers have no stats.
-  - *Bot impact*: comments answered, DMs delivered, and how many people followed because of the follow button, per automation.
-  - Numbers are organic only and can be up to 48 hours behind. Instagram data is cached (account 1h, posts 3h, audience 24h);
-    use *Refresh from Instagram* for the latest.
-  - Your follower chart is built by the app from a daily snapshot, so it fills in day by day after connecting.
-- **Settings**: Test/Live per account, AI, ignore list, the default follower messages, theme, people, password.
-- New accounts start in **Test mode**: the bot decides and logs everything, but sends nothing.
+---
 
-## Files
-| File | What it does |
-|---|---|
-| `app.py` | Web server: pages, login, API, webhook |
-| `bot.py` | Decides replies, runs the follower-button flow, refreshes tokens, backup checker |
-| `store.py` · `db.py` | Database (SQLite on your computer, Supabase Postgres online) |
-| `google_auth.py` | Sign in with Google (only for emails that already have access) |
-| `twofa.py` · `qr.py` | Two-step login codes, backup codes, and the setup QR code |
-| `security.py` | Password hashing, sessions, login rate limit, token encryption |
-| `instagram.py` | Instagram API calls |
-| `rules.py` · `ai.py` | Keyword matching (Turkish/Persian-aware) and the AI fallback |
-| `insights.py` | Insights: Instagram stats with caching, hourly story saving, bot impact, demo data |
-| `i18n.py` · `static/i18n.js` | Persian wording for server messages and app screens (edit to change any word) |
-| `static/` | The app you see: `index.html`, `app.js`, `app.css`, icons, `sw.js` + `manifest.webmanifest` (installable app) |
-| `render.yaml` | One-click Render setup |
+## 📜 License
 
-## Security notes
-- **Only people you add can sign in.** There's no sign-up; Google sign-in also only works for emails on your list.
-- **Roles** (*Settings → People with access*):
-  - **Owner** (you, `ADMIN_EMAIL`): everything, including connecting/removing Instagram accounts, switching test/live and managing people.
-  - **Editor:** automations, settings, inbox, insights, simulating comments.
-  - **View only:** can look at everything, can't change anything.
-- **Two-step login** (*Settings → Two-step login*): after the password (or Google), a 6-digit code from an authenticator app
-  (Google Authenticator, Microsoft Authenticator, 1Password…). Turning it on signs out your other devices.
-  You get 10 one-time **backup codes**: save them. Each code from the app works only once.
-  - Someone you added lost their phone? *People with access →* key icon resets their two-step login.
-  - **You** lost your phone and your backup codes? On Render, add the environment variable `RESET_2FA_EMAIL` = your email,
-    let it redeploy, sign in with your password, then **delete `RESET_2FA_EMAIL`** and turn two-step login on again.
-- **Signed-in devices** (*Settings*): see every phone/browser signed in to your login, and sign any of them out.
-- Passwords are hashed (scrypt). Sessions are HttpOnly cookies. 5 wrong passwords or codes lock that email/IP for 15 minutes.
-- Instagram tokens and two-step secrets are encrypted with `SECRET_KEY`. **Never change `SECRET_KEY`**, or you'll need to
-  reconnect accounts and set up two-step login again.
-- Webhooks are only accepted when signed by Meta with your `APP_SECRET`.
-- Never share `.env`, your Supabase URL or tokens. Change the starting password in *Settings → Your password*.
+Free to use **with credit**. See [LICENSE.md](LICENSE.md).
+
+<div align="center">
+
+Made with ☕ and late nights in Istanbul by **[Sobhan Mirgholami (Co$mo)](https://sobhan-cosmo.vercel.app)**
+
+</div>
