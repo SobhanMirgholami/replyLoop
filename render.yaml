@@ -1,0 +1,32 @@
+# Render Blueprint: New → Blueprint → pick this repo. Render asks for the values marked sync: false.
+services:
+  - type: web
+    name: replyloop
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: SECRET_KEY          # encrypts Instagram tokens; generated once, never change it
+        generateValue: true
+      - key: VERIFY_TOKEN        # copy this into the Meta webhook settings
+        generateValue: true
+      - key: DATABASE_URL        # Supabase → Connect → Session pooler URL
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD      # first login only; change it in the app afterwards
+        sync: false
+      - key: APP_SECRET          # Meta app → App settings → Basic → App secret
+        sync: false
+      - key: ANTHROPIC_API_KEY   # optional, for AI replies
+        sync: false
+      - key: GOOGLE_CLIENT_ID    # optional: Sign in with Google (see README 2e)
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: PRIVACY_CONTACT     # shown on /privacy for data-deletion requests (an email or @handle)
+        sync: false
